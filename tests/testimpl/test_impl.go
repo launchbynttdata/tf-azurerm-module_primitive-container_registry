@@ -2,11 +2,12 @@ package common
 
 import (
 	"fmt"
-	"github.com/gruntwork-io/terratest/modules/azure"
 	"testing"
 
+	"github.com/gruntwork-io/terratest/modules/azure"
+
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	"github.com/nexient-llc/lcaf-component-terratest-common/types"
+	"github.com/launchbynttdata/lcaf-component-terratest/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,10 +17,10 @@ func TestAcrComplete(t *testing.T, ctx types.TestContext) {
 		assert.NotEqual(t, "foo", "bar", "Should never be the same!")
 	})
 
-	containerRegistryId := terraform.Output(t, ctx.TerratestTerraformOptions, "container_registry_id")
-	containerRegistryName := terraform.Output(t, ctx.TerratestTerraformOptions, "container_registry_name")
-	resourceGroupName := terraform.Output(t, ctx.TerratestTerraformOptions, "resource_group_name")
-	resourceGroupId := terraform.Output(t, ctx.TerratestTerraformOptions, "resource_group_id")
+	containerRegistryId := terraform.Output(t, ctx.TerratestTerraformOptions(), "container_registry_id")
+	containerRegistryName := terraform.Output(t, ctx.TerratestTerraformOptions(), "container_registry_name")
+	resourceGroupName := terraform.Output(t, ctx.TerratestTerraformOptions(), "resource_group_name")
+	resourceGroupId := terraform.Output(t, ctx.TerratestTerraformOptions(), "resource_group_id")
 	subscriptionId := ""
 	// When cloning the skeleton to a new module, you will need to change the below test
 	// to meet your needs and add any new tests that apply to your situation.
