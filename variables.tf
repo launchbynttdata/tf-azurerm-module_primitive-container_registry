@@ -52,6 +52,12 @@ variable "identity_ids" {
   default     = null
 }
 
+variable "enable_identity" {
+  description = "Whether to configure a managed identity on the container registry. Defaults to false."
+  type        = bool
+  default     = false
+}
+
 variable "encryption" {
   description = "Encrypt registry using a customer-managed key"
   type = object({

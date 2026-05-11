@@ -14,9 +14,12 @@ resource "azurerm_container_registry" "acr" {
     }
   }
 
-  identity {
-    type         = var.identity_ids != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
-    identity_ids = var.identity_ids
+  dynamic "identity" {
+    for_each = var.enable_identity ? [1] : []
+    content {
+      type         = var.identity_ids != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
+      identity_ids = var.identity_ids
+    }
   }
 
   dynamic "encryption" {

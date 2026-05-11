@@ -78,6 +78,12 @@ variable "admin_enabled" {
   default     = true
 }
 
+variable "enable_identity" {
+  description = "Whether to configure a managed identity on the container registry. Defaults to false."
+  type        = bool
+  default     = false
+}
+
 variable "public_network_access_enabled" {
   description = "Whether public network access is allowed for the container registry. Defaults to true."
   type        = bool
