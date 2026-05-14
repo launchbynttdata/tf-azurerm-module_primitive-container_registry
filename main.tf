@@ -14,9 +14,12 @@ resource "azurerm_container_registry" "acr" {
     }
   }
 
-  identity {
-    type         = var.identity_ids != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
-    identity_ids = var.identity_ids
+  dynamic "identity" {
+    for_each = var.enable_identity || var.identity_ids != null || var.encryption != null ? [1] : []
+    content {
+      type         = var.identity_ids != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
+      identity_ids = var.identity_ids
+    }
   }
 
   dynamic "encryption" {
@@ -55,5 +58,12 @@ resource "azurerm_container_registry" "acr" {
   }
 
   tags = local.tags
+
+  lifecycle {
+    precondition {
+      condition     = var.encryption == null || var.identity_ids != null
+      error_message = "When encryption is configured, identity_ids must be provided so the encryption identity is assigned to the registry."
+    }
+  }
 
 }

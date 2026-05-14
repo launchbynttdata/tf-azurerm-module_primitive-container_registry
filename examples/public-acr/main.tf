@@ -49,6 +49,7 @@ module "container_registry" {
   location                      = var.region
   sku                           = var.sku
   admin_enabled                 = var.admin_enabled
+  enable_identity               = var.enable_identity
   public_network_access_enabled = var.public_network_access_enabled
 
   tags = merge(var.tags, { resource_name = module.resource_names["acr"].standard })

@@ -41,6 +41,7 @@
 | <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-launch-module\_library-resource\_name to generate resource names | <pre>map(object(<br/>    {<br/>      name       = string<br/>      max_length = optional(number, 60)<br/>    }<br/>  ))</pre> | <pre>{<br/>  "acr": {<br/>    "max_length": 60,<br/>    "name": "acr"<br/>  },<br/>  "rg": {<br/>    "max_length": 60,<br/>    "name": "rg"<br/>  }<br/>}</pre> | no |
 | <a name="input_sku"></a> [sku](#input\_sku) | The SKU name of the container registry. Possible values are Basic, Standard and Premium. | `string` | `"Basic"` | no |
 | <a name="input_admin_enabled"></a> [admin\_enabled](#input\_admin\_enabled) | Specifies whether the admin user is enabled. Defaults to true. When enabled, password tokens are generated to be used with docker login | `bool` | `true` | no |
+| <a name="input_enable_identity"></a> [enable\_identity](#input\_enable\_identity) | Whether to enable a system-assigned managed identity when no user-assigned identities are provided. | `bool` | `false` | no |
 | <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled) | Whether public network access is allowed for the container registry. Defaults to true. | `bool` | `true` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Custom tags for the  container registry | `map(string)` | `{}` | no |
 
