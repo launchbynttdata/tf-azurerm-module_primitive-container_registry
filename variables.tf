@@ -34,6 +34,12 @@ variable "admin_enabled" {
   default     = true
 }
 
+variable "enable_identity" {
+  description = "Whether to enable a system-assigned managed identity when no user-assigned identities are provided."
+  type        = bool
+  default     = false
+}
+
 variable "retention_policy" {
   description = "Set a retention policy for untagged manifests"
   type = object({
