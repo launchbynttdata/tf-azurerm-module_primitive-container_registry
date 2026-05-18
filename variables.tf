@@ -35,7 +35,7 @@ variable "admin_enabled" {
 }
 
 variable "enable_identity" {
-  description = "Whether to create a SystemAssigned managed identity. Set to true to preserve identity for existing registries, or false to import an existing registry without identity management."
+  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment."
   type        = bool
   default     = true
 }

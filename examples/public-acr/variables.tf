@@ -79,9 +79,9 @@ variable "admin_enabled" {
 }
 
 variable "enable_identity" {
-  description = "Whether to enable a system-assigned managed identity when no user-assigned identities are provided."
+  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "public_network_access_enabled" {

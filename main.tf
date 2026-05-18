@@ -15,7 +15,7 @@ resource "azurerm_container_registry" "acr" {
   }
 
   dynamic "identity" {
-    for_each = var.enable_identity || var.identity_ids != null || var.encryption != null ? toset(["identity"]) : toset([])
+    for_each = var.enable_identity || var.identity_ids != null ? toset(["identity"]) : toset([])
     content {
       type         = var.identity_ids != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
       identity_ids = var.identity_ids
