@@ -148,4 +148,4 @@ No modules.
 | <a name="output_container_registry_admin_username"></a> [container\_registry\_admin\_username](#output\_container\_registry\_admin\_username) | The admin username of the Container Registry |
 | <a name="output_container_registry_admin_password"></a> [container\_registry\_admin\_password](#output\_container\_registry\_admin\_password) | The admin password of the Container Registry |
 | <a name="output_container_registry_admin_enabled"></a> [container\_registry\_admin\_enabled](#output\_container\_registry\_admin\_enabled) | The admin enable of the Container Registry |
-<!-- END_TF_DOCS -->
+<!-- END_TF_DOCS --
