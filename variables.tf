@@ -34,6 +34,12 @@ variable "admin_enabled" {
   default     = true
 }
 
+variable "enable_identity" {
+  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment."
+  type        = bool
+  default     = true
+}
+
 variable "retention_policy" {
   description = "Set a retention policy for untagged manifests"
   type = object({

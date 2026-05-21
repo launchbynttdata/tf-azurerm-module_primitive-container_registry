@@ -78,6 +78,12 @@ variable "admin_enabled" {
   default     = true
 }
 
+variable "enable_identity" {
+  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment."
+  type        = bool
+  default     = true
+}
+
 variable "public_network_access_enabled" {
   description = "Whether public network access is allowed for the container registry. Defaults to true."
   type        = bool
