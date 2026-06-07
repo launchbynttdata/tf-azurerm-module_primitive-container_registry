@@ -9,12 +9,6 @@
 | <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 3.117 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.6 |
 
-## Providers
-
-| Name | Version |
-|------|---------|
-| <a name="provider_random"></a> [random](#provider\_random) | 3.9.0 |
-
 ## Modules
 
 | Name | Source | Version |
