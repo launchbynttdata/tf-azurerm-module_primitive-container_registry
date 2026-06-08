@@ -13,107 +13,92 @@ variable "location" {
 }
 
 
-##############################################
-# Variables associated with Container Registry
-##############################################
 variable "container_registry_name" {
+  description = "Name of the Azure Container Registry"
   type        = string
-  description = "Container Registry name."
-  default     = "nexientacr000"
 }
 
+
 variable "sku" {
-  description = "The SKU name of the container registry. Possible values are Basic, Standard and Premium."
+  description = "ACR SKU"
   type        = string
-  default     = "Basic"
+  default     = "Premium"
+
+  validation {
+    condition     = contains(["Basic", "Standard", "Premium"], var.sku)
+    error_message = "SKU must be Basic, Standard or Premium."
+  }
 }
 
 variable "admin_enabled" {
-  description = "Specifies whether the admin user is enabled. Defaults to true. When enabled, password tokens are generated to be used with docker login"
-  type        = bool
-  default     = true
+  type    = bool
+  default = false
 }
 
-variable "enable_identity" {
-  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment."
-  type        = bool
-  default     = true
+variable "public_network_access_enabled" {
+  type    = bool
+  default = true
 }
 
-variable "retention_policy" {
-  description = "Set a retention policy for untagged manifests"
-  type = object({
-    days    = optional(number)
-    enabled = optional(bool)
-  })
+variable "network_rule_bypass_option" {
+  type    = string
+  default = "AzureServices"
+}
+
+variable "zone_redundancy_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "retention_policy_in_days" {
+  type    = number
   default = null
 }
 
+variable "enable_identity" {
+  type    = bool
+  default = false
+}
+
 variable "identity_ids" {
-  description = <<EOT
-    Specifies a list of user managed identity ids to be assigned.
-    This is required when `type` is set to `UserAssigned` or `SystemAssigned, UserAssigned`
-  EOT
+  description = "User Assigned Identity IDs"
   type        = list(string)
   default     = null
 }
 
 variable "encryption" {
-  description = "Encrypt registry using a customer-managed key"
+  description = "Customer Managed Key Encryption"
+
   type = object({
     key_vault_key_id   = string
     identity_client_id = string
   })
+
   default = null
 }
 
-variable "public_network_access_enabled" {
-  description = "Whether public network access is allowed for the container registry. Defaults to true."
-  type        = bool
-  default     = true
-}
-
-variable "network_rule_bypass_option" {
-  description = <<EOT
-    Whether to allow trusted Azure services to access a network restricted Container Registry? Possible values are
-    None and AzureServices. Defaults to AzureServices
-  EOT
-  type        = string
-  default     = "AzureServices"
-}
-
-variable "zone_redundancy_enabled" {
-  description = <<EOT
-    Whether zone redundancy is enabled for this Container Registry? Changing this forces a new resource to be created.
-    Defaults to false
-  EOT
-  type        = bool
-  default     = false
-}
-
 variable "georeplications" {
-  description = "If specified, the ACR will be replicated to other regions specified in this block"
-  type = map(object({
+  description = "Geo Replication Configuration"
+
+  type = list(object({
     location                  = string
-    regional_endpoint_enabled = bool
-    zone_redundancy_enabled   = bool
+    regional_endpoint_enabled = optional(bool, true)
+    zone_redundancy_enabled   = optional(bool, false)
+    tags                      = optional(map(string), {})
   }))
 
-  default = {}
+  default = []
 }
 
 variable "network_rule_set" {
-  description = <<EOT
-    Network rules to explicitly allow IP ranges
-    CIDR ranges should be provided
-  EOT
-  type        = list(string)
-  default     = []
+  description = "List of allowed CIDRs"
+
+  type    = list(string)
+  default = []
 }
 
-
 variable "tags" {
-  description = "Custom tags for the  container registry"
+  description = "Tags to apply"
   type        = map(string)
   default     = {}
 }

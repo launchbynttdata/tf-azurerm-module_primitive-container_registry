@@ -95,3 +95,39 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "identity_ids" {
+  description = "List of User Assigned Managed Identity IDs."
+  type        = list(string)
+  default     = null
+}
+
+variable "encryption" {
+  description = "Customer Managed Key encryption configuration."
+
+  type = object({
+    key_vault_key_id   = string
+    identity_client_id = string
+  })
+
+  default = null
+}
+
+variable "georeplications" {
+  description = "Geo-replication configuration. Premium SKU only."
+
+  type = list(object({
+    location                  = string
+    regional_endpoint_enabled = optional(bool, true)
+    zone_redundancy_enabled   = optional(bool, false)
+    tags                      = optional(map(string), {})
+  }))
+
+  default = []
+}
+
+variable "network_rule_set" {
+  description = "List of allowed CIDR ranges. Premium SKU only."
+  type        = list(string)
+  default     = []
+}
