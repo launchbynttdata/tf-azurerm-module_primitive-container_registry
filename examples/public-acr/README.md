@@ -6,7 +6,7 @@
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.0 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 3.117 |
+| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | >= 3.77, < 5.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.6 |
 
 ## Modules
@@ -29,8 +29,12 @@
 |------|-------------|------|---------|:--------:|
 | <a name="input_admin_enabled"></a> [admin\_enabled](#input\_admin\_enabled) | Specifies whether the admin user is enabled. Defaults to true. When enabled, password tokens are generated to be used with docker login | `bool` | `true` | no |
 | <a name="input_enable_identity"></a> [enable\_identity](#input\_enable\_identity) | Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment. | `bool` | `true` | no |
+| <a name="input_encryption"></a> [encryption](#input\_encryption) | Customer Managed Key encryption configuration. | <pre>object({<br/>    key_vault_key_id   = string<br/>    identity_client_id = string<br/>  })</pre> | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment in which the resource should be provisioned like dev, qa, prod etc. | `string` | `"dev"` | no |
 | <a name="input_environment_number"></a> [environment\_number](#input\_environment\_number) | The environment count for the respective environment. Defaults to 000. Increments in value of 1 | `string` | `"000"` | no |
+| <a name="input_georeplications"></a> [georeplications](#input\_georeplications) | Geo-replication configuration. Premium SKU only. | <pre>list(object({<br/>    location                  = string<br/>    regional_endpoint_enabled = optional(bool, true)<br/>    zone_redundancy_enabled   = optional(bool, false)<br/>    tags                      = optional(map(string), {})<br/>  }))</pre> | `[]` | no |
+| <a name="input_identity_ids"></a> [identity\_ids](#input\_identity\_ids) | List of User Assigned Managed Identity IDs. | `list(string)` | `null` | no |
+| <a name="input_network_rule_set"></a> [network\_rule\_set](#input\_network\_rule\_set) | List of allowed CIDR ranges. Premium SKU only. | `list(string)` | `[]` | no |
 | <a name="input_product_family"></a> [product\_family](#input\_product\_family) | (Required) Name of the product family for which the resource is created.<br/>    Example: org\_name, department\_name. | `string` | `"dso"` | no |
 | <a name="input_product_service"></a> [product\_service](#input\_product\_service) | (Required) Name of the product service for which the resource is created.<br/>    For example, backend, frontend, middleware etc. | `string` | `"kube"` | no |
 | <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled) | Whether public network access is allowed for the container registry. Defaults to true. | `bool` | `true` | no |

@@ -37,20 +37,37 @@ module "resource_group" {
   name     = module.resource_names["rg"].dns_compliant_minimal_random_suffix
   location = var.region
 
-  tags = merge(var.tags, { resource_name = module.resource_names["rg"].standard })
-
+  tags = merge(
+    var.tags,
+    {
+      resource_name = module.resource_names["rg"].standard
+    }
+  )
 }
 
 module "container_registry" {
-  depends_on                    = [module.resource_group]
-  source                        = "../../"
-  container_registry_name       = module.resource_names["rg"].lower_case_without_any_separators
-  resource_group_name           = module.resource_group.name
-  location                      = var.region
+  depends_on = [module.resource_group]
+
+  source = "../../"
+
+  container_registry_name = module.resource_names["acr"].lower_case_without_any_separators
+  resource_group_name     = module.resource_group.name
+  location                = var.region
+
   sku                           = var.sku
   admin_enabled                 = var.admin_enabled
   enable_identity               = var.enable_identity
   public_network_access_enabled = var.public_network_access_enabled
 
-  tags = merge(var.tags, { resource_name = module.resource_names["acr"].standard })
+  identity_ids     = var.identity_ids
+  encryption       = var.encryption
+  georeplications  = var.georeplications
+  network_rule_set = var.network_rule_set
+
+  tags = merge(
+    var.tags,
+    {
+      resource_name = module.resource_names["acr"].standard
+    }
+  )
 }
