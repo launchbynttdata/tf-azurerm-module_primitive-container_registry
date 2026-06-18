@@ -1,3 +1,13 @@
+locals {
+  # Keep legacy input compatibility while using provider v4 retention_policy_in_days.
+  retention_policy_days = var.retention_policy_in_days != null ? var.retention_policy_in_days : (
+    var.retention_policy == null ? null : (try(var.retention_policy.enabled, true) ? try(var.retention_policy.days, 7) : null)
+  )
+
+  # Accept both legacy map(object) and newer list(object) forms.
+  georeplications_normalized = can(keys(var.georeplications)) ? [for _, cfg in var.georeplications : cfg] : [for cfg in var.georeplications : cfg]
+}
+
 resource "azurerm_container_registry" "acr" {
   name                = var.container_registry_name
   resource_group_name = var.resource_group_name
@@ -9,13 +19,13 @@ resource "azurerm_container_registry" "acr" {
   public_network_access_enabled = var.public_network_access_enabled
   network_rule_bypass_option    = var.network_rule_bypass_option
   zone_redundancy_enabled       = var.zone_redundancy_enabled
-  retention_policy_in_days      = var.sku == "Premium" ? var.retention_policy_in_days : null
+  retention_policy_in_days      = var.sku == "Premium" ? local.retention_policy_days : null
   # Managed Identity
   dynamic "identity" {
-    for_each = var.identity_ids != null ? [1] : var.enable_identity ? [1] : []
+    for_each = var.enable_identity || var.identity_ids != null ? [1] : []
 
     content {
-      type = var.identity_ids != null ? "UserAssigned" : "SystemAssigned"
+      type = var.identity_ids != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
 
       identity_ids = var.identity_ids
     }
@@ -33,7 +43,7 @@ resource "azurerm_container_registry" "acr" {
 
   # Geo Replications
   dynamic "georeplications" {
-    for_each = var.sku == "Premium" ? var.georeplications : []
+    for_each = var.sku == "Premium" ? local.georeplications_normalized : []
 
     content {
       location                  = georeplications.value.location
@@ -52,7 +62,7 @@ resource "azurerm_container_registry" "acr" {
     ) ? [1] : []
 
     content {
-      default_action = "Deny"
+      default_action = "Allow"
 
       dynamic "ip_rule" {
         for_each = var.network_rule_set

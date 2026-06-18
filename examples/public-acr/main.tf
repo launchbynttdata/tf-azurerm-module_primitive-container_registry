@@ -32,7 +32,7 @@ module "resource_names" {
 
 module "resource_group" {
   source  = "terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm"
-  version = "~> 1.0"
+  version = "~> 1.2"
 
   name     = module.resource_names["rg"].dns_compliant_minimal_random_suffix
   location = var.region
@@ -59,10 +59,12 @@ module "container_registry" {
   enable_identity               = var.enable_identity
   public_network_access_enabled = var.public_network_access_enabled
 
-  identity_ids     = var.identity_ids
-  encryption       = var.encryption
-  georeplications  = var.georeplications
-  network_rule_set = var.network_rule_set
+  retention_policy         = var.retention_policy
+  retention_policy_in_days = var.retention_policy_in_days
+  identity_ids             = var.identity_ids
+  encryption               = var.encryption
+  georeplications          = var.georeplications
+  network_rule_set         = var.network_rule_set
 
   tags = merge(
     var.tags,

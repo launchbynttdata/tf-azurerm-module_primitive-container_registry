@@ -113,17 +113,27 @@ variable "encryption" {
   default = null
 }
 
+variable "retention_policy" {
+  description = "Legacy retention policy object for untagged manifests."
+
+  type = object({
+    days    = optional(number)
+    enabled = optional(bool)
+  })
+
+  default = null
+}
+
+variable "retention_policy_in_days" {
+  description = "Retention policy in days. If null, module can derive from retention_policy."
+  type        = number
+  default     = null
+}
+
 variable "georeplications" {
-  description = "Geo-replication configuration. Premium SKU only."
-
-  type = list(object({
-    location                  = string
-    regional_endpoint_enabled = optional(bool, true)
-    zone_redundancy_enabled   = optional(bool, false)
-    tags                      = optional(map(string), {})
-  }))
-
-  default = []
+  description = "Geo-replication configuration. Premium SKU only. Supports both legacy map(object) and list(object) inputs."
+  type        = any
+  default     = {}
 }
 
 variable "network_rule_set" {

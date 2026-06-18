@@ -14,7 +14,7 @@
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_container_registry"></a> [container\_registry](#module\_container\_registry) | ../../ | n/a |
-| <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.0 |
+| <a name="module_resource_group"></a> [resource\_group](#module\_resource\_group) | terraform.registry.launch.nttdata.com/module_primitive/resource_group/azurerm | ~> 1.2 |
 | <a name="module_resource_names"></a> [resource\_names](#module\_resource\_names) | terraform.registry.launch.nttdata.com/module_library/resource_name/launch | ~> 2.0 |
 
 ## Resources
@@ -32,7 +32,7 @@
 | <a name="input_encryption"></a> [encryption](#input\_encryption) | Customer Managed Key encryption configuration. | <pre>object({<br/>    key_vault_key_id   = string<br/>    identity_client_id = string<br/>  })</pre> | `null` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment in which the resource should be provisioned like dev, qa, prod etc. | `string` | `"dev"` | no |
 | <a name="input_environment_number"></a> [environment\_number](#input\_environment\_number) | The environment count for the respective environment. Defaults to 000. Increments in value of 1 | `string` | `"000"` | no |
-| <a name="input_georeplications"></a> [georeplications](#input\_georeplications) | Geo-replication configuration. Premium SKU only. | <pre>list(object({<br/>    location                  = string<br/>    regional_endpoint_enabled = optional(bool, true)<br/>    zone_redundancy_enabled   = optional(bool, false)<br/>    tags                      = optional(map(string), {})<br/>  }))</pre> | `[]` | no |
+| <a name="input_georeplications"></a> [georeplications](#input\_georeplications) | Geo-replication configuration. Premium SKU only. Supports both legacy map(object) and list(object) inputs. | `any` | `{}` | no |
 | <a name="input_identity_ids"></a> [identity\_ids](#input\_identity\_ids) | List of User Assigned Managed Identity IDs. | `list(string)` | `null` | no |
 | <a name="input_network_rule_set"></a> [network\_rule\_set](#input\_network\_rule\_set) | List of allowed CIDR ranges. Premium SKU only. | `list(string)` | `[]` | no |
 | <a name="input_product_family"></a> [product\_family](#input\_product\_family) | (Required) Name of the product family for which the resource is created.<br/>    Example: org\_name, department\_name. | `string` | `"dso"` | no |
@@ -40,6 +40,8 @@
 | <a name="input_public_network_access_enabled"></a> [public\_network\_access\_enabled](#input\_public\_network\_access\_enabled) | Whether public network access is allowed for the container registry. Defaults to true. | `bool` | `true` | no |
 | <a name="input_region"></a> [region](#input\_region) | AWS Region in which the infra needs to be provisioned | `string` | `"eastus"` | no |
 | <a name="input_resource_names_map"></a> [resource\_names\_map](#input\_resource\_names\_map) | A map of key to resource\_name that will be used by tf-launch-module\_library-resource\_name to generate resource names | <pre>map(object(<br/>    {<br/>      name       = string<br/>      max_length = optional(number, 60)<br/>    }<br/>  ))</pre> | <pre>{<br/>  "acr": {<br/>    "max_length": 60,<br/>    "name": "acr"<br/>  },<br/>  "rg": {<br/>    "max_length": 60,<br/>    "name": "rg"<br/>  }<br/>}</pre> | no |
+| <a name="input_retention_policy"></a> [retention\_policy](#input\_retention\_policy) | Legacy retention policy object for untagged manifests. | <pre>object({<br/>    days    = optional(number)<br/>    enabled = optional(bool)<br/>  })</pre> | `null` | no |
+| <a name="input_retention_policy_in_days"></a> [retention\_policy\_in\_days](#input\_retention\_policy\_in\_days) | Retention policy in days. If null, module can derive from retention\_policy. | `number` | `null` | no |
 | <a name="input_sku"></a> [sku](#input\_sku) | The SKU name of the container registry. Possible values are Basic, Standard and Premium. | `string` | `"Basic"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Custom tags for the  container registry | `map(string)` | `{}` | no |
 

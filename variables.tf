@@ -14,15 +14,16 @@ variable "location" {
 
 
 variable "container_registry_name" {
-  description = "Name of the Azure Container Registry"
   type        = string
+  description = "Container Registry name."
+  default     = "nexientacr000"
 }
 
 
 variable "sku" {
-  description = "ACR SKU"
+  description = "The SKU name of the container registry. Possible values are Basic, Standard and Premium."
   type        = string
-  default     = "Premium"
+  default     = "Basic"
 
   validation {
     condition     = contains(["Basic", "Standard", "Premium"], var.sku)
@@ -31,8 +32,9 @@ variable "sku" {
 }
 
 variable "admin_enabled" {
-  type    = bool
-  default = false
+  description = "Specifies whether the admin user is enabled. Defaults to true. When enabled, password tokens are generated to be used with docker login"
+  type        = bool
+  default     = true
 }
 
 variable "public_network_access_enabled" {
@@ -51,23 +53,37 @@ variable "zone_redundancy_enabled" {
 }
 
 variable "retention_policy_in_days" {
-  type    = number
-  default = null
+  description = "Retention policy in days for untagged manifests. If null, this is derived from retention_policy for backward compatibility."
+  type        = number
+  default     = null
 }
 
 variable "enable_identity" {
-  type    = bool
-  default = false
+  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment."
+  type        = bool
+  default     = true
+}
+
+variable "retention_policy" {
+  description = "Set a retention policy for untagged manifests"
+  type = object({
+    days    = optional(number)
+    enabled = optional(bool)
+  })
+  default = null
 }
 
 variable "identity_ids" {
-  description = "User Assigned Identity IDs"
+  description = <<EOT
+    Specifies a list of user managed identity ids to be assigned.
+    This is required when `type` is set to `UserAssigned` or `SystemAssigned, UserAssigned`
+  EOT
   type        = list(string)
   default     = null
 }
 
 variable "encryption" {
-  description = "Customer Managed Key Encryption"
+  description = "Encrypt registry using a customer-managed key"
 
   type = object({
     key_vault_key_id   = string
@@ -78,27 +94,22 @@ variable "encryption" {
 }
 
 variable "georeplications" {
-  description = "Geo Replication Configuration"
-
-  type = list(object({
-    location                  = string
-    regional_endpoint_enabled = optional(bool, true)
-    zone_redundancy_enabled   = optional(bool, false)
-    tags                      = optional(map(string), {})
-  }))
-
-  default = []
+  description = "If specified, the ACR will be replicated to other regions specified in this block. Supports both legacy map(object) and list(object) inputs."
+  type        = any
+  default     = {}
 }
 
 variable "network_rule_set" {
-  description = "List of allowed CIDRs"
-
-  type    = list(string)
-  default = []
+  description = <<EOT
+    Network rules to explicitly allow IP ranges
+    CIDR ranges should be provided
+  EOT
+  type        = list(string)
+  default     = []
 }
 
 variable "tags" {
-  description = "Tags to apply"
+  description = "Custom tags for the  container registry"
   type        = map(string)
   default     = {}
 }
