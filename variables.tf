@@ -15,8 +15,7 @@ variable "location" {
 
 variable "container_registry_name" {
   type        = string
-  description = "Container Registry name."
-  default     = "nexientacr000"
+  description = "Name of the Azure Container Registry."
 }
 
 
@@ -32,9 +31,9 @@ variable "sku" {
 }
 
 variable "admin_enabled" {
-  description = "Specifies whether the admin user is enabled. Defaults to true. When enabled, password tokens are generated to be used with docker login"
+  description = "Specifies whether the admin user is enabled. When enabled, password tokens are generated to be used with docker login. Use Managed Identity or Azure AD authentication instead."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "public_network_access_enabled" {
@@ -59,9 +58,9 @@ variable "retention_policy_in_days" {
 }
 
 variable "enable_identity" {
-  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment."
+  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to false (least privilege). Set to true only when needed for authentication. When importing an existing registry without identity, keep this as false to avoid unintended in-place assignment."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "retention_policy" {

@@ -116,9 +116,9 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_admin_enabled"></a> [admin\_enabled](#input\_admin\_enabled) | Specifies whether the admin user is enabled. Defaults to true. When enabled, password tokens are generated to be used with docker login | `bool` | `true` | no |
-| <a name="input_container_registry_name"></a> [container\_registry\_name](#input\_container\_registry\_name) | Container Registry name. | `string` | `"nexientacr000"` | no |
-| <a name="input_enable_identity"></a> [enable\_identity](#input\_enable\_identity) | Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment. | `bool` | `true` | no |
+| <a name="input_admin_enabled"></a> [admin\_enabled](#input\_admin\_enabled) | Specifies whether the admin user is enabled. When enabled, password tokens are generated to be used with docker login. Use Managed Identity or Azure AD authentication instead. | `bool` | `false` | no |
+| <a name="input_container_registry_name"></a> [container\_registry\_name](#input\_container\_registry\_name) | Name of the Azure Container Registry. | `string` | n/a | yes |
+| <a name="input_enable_identity"></a> [enable\_identity](#input\_enable\_identity) | Whether to configure a SystemAssigned managed identity on the registry. Defaults to false (least privilege). Set to true only when needed for authentication. When importing an existing registry without identity, keep this as false to avoid unintended in-place assignment. | `bool` | `false` | no |
 | <a name="input_encryption"></a> [encryption](#input\_encryption) | Encrypt registry using a customer-managed key | <pre>object({<br/>    key_vault_key_id   = string<br/>    identity_client_id = string<br/>  })</pre> | `null` | no |
 | <a name="input_georeplications"></a> [georeplications](#input\_georeplications) | If specified, the ACR will be replicated to other regions specified in this block. Supports both legacy map(object) and list(object) inputs. | `any` | `{}` | no |
 | <a name="input_identity_ids"></a> [identity\_ids](#input\_identity\_ids) | Specifies a list of user managed identity ids to be assigned.<br/>    This is required when `type` is set to `UserAssigned` or `SystemAssigned, UserAssigned` | `list(string)` | `null` | no |
