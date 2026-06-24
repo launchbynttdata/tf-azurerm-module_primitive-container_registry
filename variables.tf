@@ -13,63 +13,37 @@ variable "location" {
 }
 
 
+##############################################
+# Variables associated with Container Registry
+##############################################
 variable "container_registry_name" {
   type        = string
-  description = "Name of the Azure Container Registry."
+  description = "Container Registry name."
+  default     = "nexientacr000"
 }
-
 
 variable "sku" {
   description = "The SKU name of the container registry. Possible values are Basic, Standard and Premium."
   type        = string
   default     = "Basic"
-
-  validation {
-    condition     = contains(["Basic", "Standard", "Premium"], var.sku)
-    error_message = "SKU must be Basic, Standard or Premium."
-  }
 }
 
 variable "admin_enabled" {
-  description = "Specifies whether the admin user is enabled. When enabled, password tokens are generated to be used with docker login. Use Managed Identity or Azure AD authentication instead."
+  description = "Specifies whether the admin user is enabled. Defaults to true. When enabled, password tokens are generated to be used with docker login"
   type        = bool
-  default     = false
-}
-
-variable "public_network_access_enabled" {
-  type    = bool
-  default = true
-}
-
-variable "network_rule_bypass_option" {
-  type    = string
-  default = "AzureServices"
-}
-
-variable "zone_redundancy_enabled" {
-  type    = bool
-  default = false
-}
-
-variable "retention_policy_in_days" {
-  description = "Retention policy in days for untagged manifests. If null, this is derived from retention_policy for backward compatibility."
-  type        = number
-  default     = null
+  default     = true
 }
 
 variable "enable_identity" {
-  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to false (least privilege). Set to true only when needed for authentication. When importing an existing registry without identity, keep this as false to avoid unintended in-place assignment."
+  description = "Whether to configure a SystemAssigned managed identity on the registry. Defaults to true to preserve historical behavior. Set to false when importing an existing registry that has no identity, to avoid an unintended in-place assignment."
   type        = bool
-  default     = false
+  default     = true
 }
 
-variable "retention_policy" {
-  description = "Set a retention policy for untagged manifests"
-  type = object({
-    days    = optional(number)
-    enabled = optional(bool)
-  })
-  default = null
+variable "retention_policy_in_days" {
+  description = "The number of days to retain an untagged manifest after which it gets purged"
+  type        = number
+  default     = null
 }
 
 variable "identity_ids" {
@@ -83,19 +57,46 @@ variable "identity_ids" {
 
 variable "encryption" {
   description = "Encrypt registry using a customer-managed key"
-
   type = object({
     key_vault_key_id   = string
     identity_client_id = string
   })
-
   default = null
 }
 
+variable "public_network_access_enabled" {
+  description = "Whether public network access is allowed for the container registry. Defaults to true."
+  type        = bool
+  default     = true
+}
+
+variable "network_rule_bypass_option" {
+  description = <<EOT
+    Whether to allow trusted Azure services to access a network restricted Container Registry? Possible values are
+    None and AzureServices. Defaults to AzureServices
+  EOT
+  type        = string
+  default     = "AzureServices"
+}
+
+variable "zone_redundancy_enabled" {
+  description = <<EOT
+    Whether zone redundancy is enabled for this Container Registry? Changing this forces a new resource to be created.
+    Defaults to false
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "georeplications" {
-  description = "If specified, the ACR will be replicated to other regions specified in this block. Supports both legacy map(object) and list(object) inputs."
-  type        = any
-  default     = {}
+  description = "If specified, the ACR will be replicated to other regions specified in this block"
+  type = map(object({
+    location                  = string
+    regional_endpoint_enabled = bool
+    zone_redundancy_enabled   = bool
+  }))
+
+  default = {}
 }
 
 variable "network_rule_set" {
@@ -106,6 +107,7 @@ variable "network_rule_set" {
   type        = list(string)
   default     = []
 }
+
 
 variable "tags" {
   description = "Custom tags for the  container registry"

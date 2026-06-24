@@ -1,72 +1,46 @@
-locals {
-  # Keep legacy input compatibility while using provider v4 retention_policy_in_days.
-  retention_policy_days = var.retention_policy_in_days != null ? var.retention_policy_in_days : (
-    var.retention_policy == null ? null : (try(var.retention_policy.enabled, true) ? try(var.retention_policy.days, 7) : null)
-  )
-
-  # Accept both legacy map(object) and newer list(object) forms.
-  georeplications_normalized = can(keys(var.georeplications)) ? [for _, cfg in var.georeplications : cfg] : [for cfg in var.georeplications : cfg]
-}
-
 resource "azurerm_container_registry" "acr" {
-  name                = var.container_registry_name
-  resource_group_name = var.resource_group_name
-  location            = var.location
-
-  sku           = var.sku
-  admin_enabled = var.admin_enabled
-
+  name                          = var.container_registry_name
+  admin_enabled                 = var.admin_enabled
+  location                      = var.location
+  resource_group_name           = var.resource_group_name
+  sku                           = var.sku
   public_network_access_enabled = var.public_network_access_enabled
-  network_rule_bypass_option    = var.network_rule_bypass_option
-  zone_redundancy_enabled       = var.zone_redundancy_enabled
-  retention_policy_in_days      = var.sku == "Premium" ? local.retention_policy_days : null
-  # Managed Identity
+  retention_policy_in_days      = var.retention_policy_in_days
+
   dynamic "identity" {
-    for_each = var.enable_identity || var.identity_ids != null ? [1] : []
-
+    for_each = var.enable_identity || var.identity_ids != null ? toset(["identity"]) : toset([])
     content {
-      type = var.identity_ids != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
-
+      type         = var.identity_ids != null ? "SystemAssigned, UserAssigned" : "SystemAssigned"
       identity_ids = var.identity_ids
     }
   }
 
-  # Customer Managed Key Encryption
   dynamic "encryption" {
     for_each = var.encryption != null ? [var.encryption] : []
-
     content {
       key_vault_key_id   = encryption.value.key_vault_key_id
       identity_client_id = encryption.value.identity_client_id
     }
   }
 
-  # Geo Replications
-  dynamic "georeplications" {
-    for_each = var.sku == "Premium" ? local.georeplications_normalized : []
+  network_rule_bypass_option = var.network_rule_bypass_option
+  zone_redundancy_enabled    = var.zone_redundancy_enabled
 
+  dynamic "georeplications" {
+    for_each = var.georeplications
     content {
       location                  = georeplications.value.location
-      regional_endpoint_enabled = try(georeplications.value.regional_endpoint_enabled, true)
-      zone_redundancy_enabled   = try(georeplications.value.zone_redundancy_enabled, false)
-
-      tags = try(georeplications.value.tags, {})
+      regional_endpoint_enabled = georeplications.value.regional_endpoint_enabled
+      zone_redundancy_enabled   = georeplications.value.zone_redundancy_enabled
     }
   }
 
-  # Network Rules
   dynamic "network_rule_set" {
-    for_each = (
-      var.sku == "Premium" &&
-      length(var.network_rule_set) > 0
-    ) ? [1] : []
-
+    for_each = length(var.network_rule_set) > 0 && var.sku == "Premium" ? [1] : []
     content {
       default_action = "Allow"
-
       dynamic "ip_rule" {
         for_each = var.network_rule_set
-
         content {
           action   = "Allow"
           ip_range = ip_rule.value
@@ -79,12 +53,8 @@ resource "azurerm_container_registry" "acr" {
 
   lifecycle {
     precondition {
-      condition = (
-        var.encryption == null ||
-        length(coalesce(var.identity_ids, [])) > 0
-      )
-
-      error_message = "When encryption is configured, at least one User Assigned Identity must be provided."
+      condition     = var.encryption == null || var.identity_ids != null
+      error_message = "When encryption is configured, identity_ids must be provided to specify the managed identity used for encryption key access."
     }
   }
 }
