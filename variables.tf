@@ -40,13 +40,10 @@ variable "enable_identity" {
   default     = true
 }
 
-variable "retention_policy" {
-  description = "Set a retention policy for untagged manifests"
-  type = object({
-    days    = optional(number)
-    enabled = optional(bool)
-  })
-  default = null
+variable "retention_policy_in_days" {
+  description = "The number of days to retain an untagged manifest after which it gets purged"
+  type        = number
+  default     = null
 }
 
 variable "identity_ids" {
