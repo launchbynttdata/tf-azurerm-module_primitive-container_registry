@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -17,10 +18,10 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 		assert.NotEqual(t, "foo", "bar", "Should never be the same!")
 	})
 
-	containerRegistryId := terraform.Output(t, ctx.TerratestTerraformOptions(), "container_registry_id")
-	containerRegistryName := terraform.Output(t, ctx.TerratestTerraformOptions(), "container_registry_name")
-	resourceGroupName := terraform.Output(t, ctx.TerratestTerraformOptions(), "resource_group_name")
-	resourceGroupId := terraform.Output(t, ctx.TerratestTerraformOptions(), "resource_group_id")
+	containerRegistryId := terraform.OutputContext(t, context.Background(), ctx.TerratestTerraformOptions(), "container_registry_id")
+	containerRegistryName := terraform.OutputContext(t, context.Background(), ctx.TerratestTerraformOptions(), "container_registry_name")
+	resourceGroupName := terraform.OutputContext(t, context.Background(), ctx.TerratestTerraformOptions(), "resource_group_name")
+	resourceGroupId := terraform.OutputContext(t, context.Background(), ctx.TerratestTerraformOptions(), "resource_group_id")
 	subscriptionId := ""
 	// When cloning the skeleton to a new module, you will need to change the below test
 	// to meet your needs and add any new tests that apply to your situation.
@@ -32,9 +33,9 @@ func TestComposableComplete(t *testing.T, ctx types.TestContext) {
 
 	t.Run("ValidateActualInfrastructure", func(t *testing.T) {
 
-		containerRegistryExists := azure.ContainerRegistryExists(t, containerRegistryName, resourceGroupName, subscriptionId)
-		containerRegistry := azure.GetContainerRegistry(t, containerRegistryName, resourceGroupName, subscriptionId)
-		fmt.Printf("SKU: %s, Location: %s, Name: %s, LoginServer: %s\n", containerRegistry.Sku.Name, *containerRegistry.Location, *containerRegistry.Name, *containerRegistry.LoginServer)
+		containerRegistryExists := azure.ContainerRegistryExistsContext(t, context.Background(), containerRegistryName, resourceGroupName, subscriptionId)
+		containerRegistry := azure.GetContainerRegistryContext(t, context.Background(), containerRegistryName, resourceGroupName, subscriptionId)
+		fmt.Printf("SKU: %s, Location: %s, Name: %s, LoginServer: %s\n", *containerRegistry.SKU.Name, *containerRegistry.Location, *containerRegistry.Name, *containerRegistry.Properties.LoginServer)
 		tags := containerRegistry.Tags
 		fmt.Println("Tags:")
 		for k, v := range tags {
